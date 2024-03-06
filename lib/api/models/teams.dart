@@ -1,26 +1,30 @@
+// To parse this JSON data, do
+//
+//     final parseStandings = parseStandingsFromJson(jsonString);
+
 import 'dart:convert';
 
-FetchStandings fetchStandingsFromJson(String str) => FetchStandings.fromJson(json.decode(str));
+ParseStandings parseStandingsFromJson(String str) => ParseStandings.fromJson(json.decode(str));
 
-String fetchStandingsToJson(FetchStandings data) => json.encode(data.toJson());
+String parseStandingsToJson(ParseStandings data) => json.encode(data.toJson());
 
-class FetchStandings {
-  String fetchStandingsGet;
+class ParseStandings {
+  String parseStandingsGet;
   Parameters parameters;
   List<dynamic> errors;
   int results;
   List<Response> response;
 
-  FetchStandings({
-    required this.fetchStandingsGet,
+  ParseStandings({
+    required this.parseStandingsGet,
     required this.parameters,
     required this.errors,
     required this.results,
     required this.response,
   });
 
-  factory FetchStandings.fromJson(Map<String, dynamic> json) => FetchStandings(
-    fetchStandingsGet: json["get"],
+  factory ParseStandings.fromJson(Map<String, dynamic> json) => ParseStandings(
+    parseStandingsGet: json["get"],
     parameters: Parameters.fromJson(json["parameters"]),
     errors: List<dynamic>.from(json["errors"].map((x) => x)),
     results: json["results"],
@@ -28,7 +32,7 @@ class FetchStandings {
   );
 
   Map<String, dynamic> toJson() => {
-    "get": fetchStandingsGet,
+    "get": parseStandingsGet,
     "parameters": parameters.toJson(),
     "errors": List<dynamic>.from(errors.map((x) => x)),
     "results": results,

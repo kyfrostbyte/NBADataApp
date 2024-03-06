@@ -6,11 +6,11 @@ import 'models/teams.dart';
 import 'dart:async';
 export 'models/teams.dart';
 
-Future<FetchStandings?> fetchStandings() async {
+Future<ParseStandings?> fetchStandings() async {
   const String url = "https://api-nba-v1.p.rapidapi.com/standings";
   final Map<String, String> queryParameters = {
     "league": "standard",
-    "season": "2021",
+    "season": "2020",
   };
 
   final Map<String, String> headers = {
@@ -27,7 +27,7 @@ Future<FetchStandings?> fetchStandings() async {
     print("Request Successful");
 
     // Convert the decoded JSON map to a FetchStandings object
-    return fetchStandingsFromJson(response.body);
+    return parseStandingsFromJson(response.body);
   } else {
     // Handle error (you might want to throw an exception or return an error object)
     print('Error: ${response.statusCode}');

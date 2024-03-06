@@ -2,32 +2,45 @@ import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'api/api_service.dart';
-
+import 'package:http/http.dart' as http;
 import 'api/models/teams.dart';
 
-void main() async {
-  // Assuming fetchStandingsResult is the result from fetchStandings function
-  FetchStandings? fetchStandingsResult = await fetchStandings();
+// void main() async {
+//   // Assuming fetchStandingsResult is the result from fetchStandings function
+//   FetchStandings? fetchStandingsResult = await fetchStandings();
+//
+//   // Check if fetchStandingsResult is not null and has a response
+//   if (fetchStandingsResult != null && fetchStandingsResult.response is List) {
+//     // Iterate through the list of teams
+//     List<Response> teamsList = fetchStandingsResult.response;
+//     for (var teamData in teamsList) {
+//       // Access and print information for each team
+//       Team team = teamData.team;
+//       print('Team Name: ${team.name}');
+//       print('Conference: ${teamData.conference.name}');
+//       print('Division: ${teamData.division.name}');
+//       print('Wins: ${teamData.win.total}');
+//       print('Losses: ${teamData.loss.total}');
+//       print('---------------------');
+//     }
+//   } else {
+//     print('Invalid response format or missing data');
+//   }
+// }
 
-  // Check if fetchStandingsResult is not null and has a response
-  if (fetchStandingsResult != null && fetchStandingsResult.response is List) {
-    // Iterate through the list of teams
-    List<Response> teamsList = fetchStandingsResult.response;
-    for (var teamData in teamsList) {
-      // Access and print information for each team
-      Team team = teamData.team;
-      print('Team Name: ${team.name}');
-      print('Conference: ${teamData.conference.name}');
-      print('Division: ${teamData.division.name}');
-      print('Wins: ${teamData.win.total}');
-      print('Losses: ${teamData.loss.total}');
-      print('---------------------');
-    }
+void main() async {
+  ParseStandings? parseStandingsResult = await fetchStandings();
+
+  // Check if the result is not null
+  if (parseStandingsResult != null) {
+    // Access the parsed data
+    print('Results: ${parseStandingsResult.results}');
+    print('First team name: ${parseStandingsResult.response[0].team.name}');
   } else {
-    print('Invalid response format or missing data');
+    // Handle the case where the fetchStandings call returned null (error occurred)
+    print('Error occurred while fetching standings.');
   }
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
