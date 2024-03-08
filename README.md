@@ -26,3 +26,45 @@ print(standings);
 print('An error occurred: $e');
 }
 }
+
+
+runApp(MyApp());
+
+Completed things:
+
+
+# Get data for NBA game by date
+String date = "2022-02-12"; // Replace with the desired date
+GamesByDate? gamesByDate = await fetchGamesByDate(date);
+
+if (gamesByDate != null) {
+for (GameInfo game in gamesByDate.games){
+print("Team: ${game.visitorTeamName}, Score: ${game.visitorScore}, Logo: ${game.visitorLogo}");
+print("Team: ${game.homeTeamName}, Score: ${game.homeScore}, Logo: ${game.homeLogo}");
+print(" ");
+}
+}
+
+
+# Get standings. Sorted by rank and conference
+String date = "2021"; // Replace with the desired date
+StandingsByYear? standingsByYear = await fetchStandings(date);
+
+if (standingsByYear != null) {
+standingsByYear.standings.sort((a, b) {
+// First, sort by conference
+int conferenceComparison = a.conference.compareTo(b.conference);
+
+      // If the conferences are the same, sort by rank
+      if (conferenceComparison == 0) {
+        return a.rank.compareTo(b.rank);
+      } else {
+        return conferenceComparison;
+      }
+    });
+
+    for (StandingsInfo standing in standingsByYear.standings) {
+      print("Team: ${standing.name}, Rank: ${standing
+          .rank}, Conference: ${standing.conference}");
+    }
+}

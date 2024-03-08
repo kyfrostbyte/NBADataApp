@@ -1,9 +1,12 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sport_scores/api/models/gamesbydate.dart';
 import 'api/api_service.dart';
 import 'package:http/http.dart' as http;
-import 'api/models/teams.dart';
+import 'api/models/standingsby_year.dart';
+import 'api/models/standingsinfo.dart';
+import 'package:flutter/material.dart';
 
 // void main() async {
 //   // Assuming fetchStandingsResult is the result from fetchStandings function
@@ -29,17 +32,7 @@ import 'api/models/teams.dart';
 // }
 
 void main() async {
-  ParseStandings? parseStandingsResult = await fetchStandings();
-
-  // Check if the result is not null
-  if (parseStandingsResult != null) {
-    // Access the parsed data
-    print('Results: ${parseStandingsResult.results}');
-    print('First team name: ${parseStandingsResult.response[0].team.name}');
-  } else {
-    // Handle the case where the fetchStandings call returned null (error occurred)
-    print('Error occurred while fetching standings.');
-  }
+ runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -53,7 +46,7 @@ class MyApp extends StatelessWidget {
         title: 'Namer App',
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
         ),
         home: MyHomePage(),
       ),
@@ -96,48 +89,48 @@ class _MyHomePageState extends State<MyHomePage> {
         page = GeneratorPage();
         break;
       case 1:
-        page = FavoritesPage();
+        page = ScoresPage();
         break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
 
     return LayoutBuilder(
-      builder: (context, constraints) {
-        return Scaffold(
-          body: Row(
-            children: [
-              SafeArea(
-                child: NavigationRail(
-                  extended: constraints.maxWidth >= 600,
-                  destinations: [
-                    NavigationRailDestination(
-                      icon: Icon(Icons.home),
-                      label: Text('Home'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.favorite),
-                      label: Text('Favorites'),
-                    ),
-                  ],
-                  selectedIndex: selectedIndex,
-                  onDestinationSelected: (value) {
-                    setState(() {
-                      selectedIndex = value;
-                    });
-                  },
+        builder: (context, constraints) {
+          return Scaffold(
+            body: Row(
+              children: [
+                SafeArea(
+                  child: NavigationRail(
+                    extended: constraints.maxWidth >= 600,
+                    destinations: [
+                      NavigationRailDestination(
+                        icon: Icon(Icons.home),
+                        label: Text('Home'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.favorite),
+                        label: Text('Favorites'),
+                      ),
+                    ],
+                    selectedIndex: selectedIndex,
+                    onDestinationSelected: (value) {
+                      setState(() {
+                        selectedIndex = value;
+                      });
+                    },
+                  ),
                 ),
-              ),
-              Expanded(
-                child: Container(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  child: page,
+                Expanded(
+                  child: Container(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    child: page,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        );
-      }
+              ],
+            ),
+          );
+        }
     );
   }
 }
@@ -200,16 +193,16 @@ class BigCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of((context));
     final style = theme.textTheme.displayMedium!.copyWith(
-        color: theme.colorScheme.onPrimary,
+      color: theme.colorScheme.onPrimary,
     );
     return Card(
       color: theme.colorScheme.primary,
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Text(
-            pair.asLowerCase,
-            style: style,
-            semanticsLabel: "${pair.first} ${pair.second}",
+          pair.asLowerCase,
+          style: style,
+          semanticsLabel: "${pair.first} ${pair.second}",
         ),
       ),
     );
@@ -223,15 +216,15 @@ class FavoritesPage extends StatelessWidget {
 
     if (appState.favorites.isEmpty){
       return Center(
-        child: Text('No Favorites Yet')
+          child: Text('No Favorites Yet')
       );
     }
 
     return ListView(
       children: [
         Padding(
-            padding: const EdgeInsets.all(20),
-            child: Text('You have ' '${appState.favorites.length} favorites:'),
+          padding: const EdgeInsets.all(20),
+          child: Text('You have ' '${appState.favorites.length} favorites:'),
         ),
 
         for (var pair in appState.favorites)
@@ -243,3 +236,74 @@ class FavoritesPage extends StatelessWidget {
     );
   }
 }
+
+
+
+
+class ScoresPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+
+    return ListView(
+      children: [
+        buildGameContainer('Washington Wizards', 'https://upload.wikimedia.org/wikipedia/fr/archive/d/d6/20161212034849%21Wizards2015.png', 102,
+                          'Toronto Raptors', 'https://upload.wikimedia.org/wikipedia/fr/8/89/Raptors2015.png', 107),
+        // Add more game containers as needed
+      ],
+    );
+  }
+
+  Widget buildGameContainer(String homeTeamName, String homeTeamLogoUrl, int homeScore, String visitorTeamName, String visitorTeamLogoUrl, int visitorScore) {
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black),
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Image.network(
+                homeTeamLogoUrl,
+                width: 30.0,
+                height: 30.0,
+              ),
+              Text(
+                homeTeamName,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'Score: $homeScore',
+                style: TextStyle(color: Colors.black),
+              ),
+            ],
+          ),
+          SizedBox(height: 20,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Image.network(
+                visitorTeamLogoUrl,
+                width: 30.0,
+                height: 30.0,
+              ),
+              Text(
+                visitorTeamName,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'Score: $visitorScore',
+                style: TextStyle(color: Colors.black),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+

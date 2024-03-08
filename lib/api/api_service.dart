@@ -2,15 +2,19 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'models/teams.dart';
+import 'package:sport_scores/api/models/gameinfo.dart';
+import 'models/gamesbydate.dart';
+import 'models/standingsby_year.dart';
 import 'dart:async';
-export 'models/teams.dart';
+export 'models/standingsby_year.dart';
+export 'models/gameinfo.dart';
 
-Future<ParseStandings?> fetchStandings() async {
+
+Future<StandingsByYear?> fetchStandings(year) async {
   const String url = "https://api-nba-v1.p.rapidapi.com/standings";
   final Map<String, String> queryParameters = {
     "league": "standard",
-    "season": "2020",
+    "season": year,
   };
 
   final Map<String, String> headers = {
@@ -23,11 +27,11 @@ Future<ParseStandings?> fetchStandings() async {
   final response = await http.get(uri, headers: headers);
 
   if (response.statusCode == 200) {
-    // Successful response
-    print("Request Successful");
+    print("StandingsByYear Request Successful");
 
     // Convert the decoded JSON map to a FetchStandings object
-    return parseStandingsFromJson(response.body);
+    final Map<String, dynamic> responseJson = json.decode(response.body);
+    return StandingsByYear.fromJson(responseJson);
   } else {
     // Handle error (you might want to throw an exception or return an error object)
     print('Error: ${response.statusCode}');
@@ -35,6 +39,33 @@ Future<ParseStandings?> fetchStandings() async {
   }
 }
 
+
+Future<GamesByDate?> fetchGamesByDate(date) async {
+  const String url = "https://api-nba-v1.p.rapidapi.com/games";
+  final Map<String, String> queryParameters = {
+    "date": date,
+  };
+
+  final Map<String, String> headers = {
+    "X-RapidAPI-Key": "f1209231d1msh4921fffcfc193e2p13fa0bjsnaa6b8925a8eb",
+    "X-RapidAPI-Host": "api-nba-v1.p.rapidapi.com",
+  };
+
+  final Uri uri = Uri.parse(url).replace(queryParameters: queryParameters);
+
+  final response = await http.get(uri, headers: headers);
+
+  if (response.statusCode == 200) {
+    final Map<String, dynamic> responseJson = json.decode(response.body);
+    print("GamesByDate Call Successful");
+    return GamesByDate.fromJson(responseJson);
+
+  } else {
+    print('Error: ${response.statusCode}');
+    print('Response Body: ${response.body}');
+    return null;
+  }
+}
 
 
 
