@@ -7,6 +7,8 @@ import 'package:http/http.dart' as http;
 import 'api/models/standingsby_year.dart';
 import 'api/models/standingsinfo.dart';
 import 'package:flutter/material.dart';
+import 'api/gameservice.dart';
+
 
 // void main() async {
 //   // Assuming fetchStandingsResult is the result from fetchStandings function
@@ -32,7 +34,8 @@ import 'package:flutter/material.dart';
 // }
 
 void main() async {
- runApp(MyApp());
+  runApp(MyApp());
+
 }
 
 class MyApp extends StatelessWidget {
@@ -86,11 +89,13 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget page;
     switch (selectedIndex){
       case 0:
-        page = GeneratorPage();
+        page = MyScoresPage();
         break;
       case 1:
-        page = ScoresPage();
+        page = GeneratorPage();
         break;
+      case 2:
+        page = Placeholder();
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
@@ -111,6 +116,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       NavigationRailDestination(
                         icon: Icon(Icons.favorite),
                         label: Text('Favorites'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.star),
+                        label: Text('Scores'),
                       ),
                     ],
                     selectedIndex: selectedIndex,
@@ -260,50 +269,111 @@ class ScoresPage extends StatelessWidget {
         border: Border.all(color: Colors.black),
         borderRadius: BorderRadius.circular(8.0),
       ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Image.network(
-                homeTeamLogoUrl,
-                width: 30.0,
-                height: 30.0,
-              ),
-              Text(
-                homeTeamName,
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'Score: $homeScore',
-                style: TextStyle(color: Colors.black),
-              ),
-            ],
-          ),
-          SizedBox(height: 20,),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Image.network(
-                visitorTeamLogoUrl,
-                width: 30.0,
-                height: 30.0,
-              ),
-              Text(
-                visitorTeamName,
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'Score: $visitorScore',
-                style: TextStyle(color: Colors.black),
-              ),
-            ],
-          ),
-        ],
-      ),
+    );
+  }
+}
+
+class MyScoresPage extends StatefulWidget {
+  const MyScoresPage({Key? key}) : super(key: key);
+
+  @override
+  _MyScoresPageState createState() => _MyScoresPageState();
+}
+
+class _MyScoresPageState extends State<MyScoresPage> {
+  late Future<List<GameInfo>> futureGames;
+
+  @override
+  void initState() {
+    String date = "2022-02-12"; // Replace with the desired date
+    super.initState();
+    futureGames = GamesService().fetchGamesByDate(date);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(title: const Text('People')),
+        body: Center(
+          child: FutureBuilder<List<GameInfo>>(
+              future: futureGames,
+              builder: (context, AsyncSnapshot snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.separated(
+                      itemBuilder: (context, index) {
+                        GameInfo game = snapshot.data?[index];
+                        return ListTile(
+                          title: Container(
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Image.network(
+                                      game.homeLogo,
+                                      width: 30.0,
+                                      height: 30.0,
+                                    ),
+                                    Text(
+                                      game.homeTeamName,
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      'Score: ${game.homeScore.toString()} ',
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 20,),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Image.network(
+                                      game.visitorLogo,
+                                      width: 30.0,
+                                      height: 30.0,
+                                    ),
+                                    Text(
+                                      game.visitorTeamName,
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      'Score: ${game.visitorScore.toString()}',
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                      separatorBuilder: ((context, index) {
+                        return const Divider(color: Colors.black);
+                      }),
+                      itemCount: snapshot.data!.length);
+
+                } else if (snapshot.hasError) {
+                  return(Text('ERROR: ${snapshot.error}'));
+                }
+
+                return const CircularProgressIndicator();
+              }
+          )
+        )
     );
   }
 }
 
 
 
+// ListView.builder(
+// itemCount: items.length,
+// itemBuilder: (context, index) {
+// final item = items[index];
+// return ListTile(
+// title: Text('Item $item'),
+// trailing: const Icon(Icons.chevron_right_outlined),
+// );
+// }
+// )

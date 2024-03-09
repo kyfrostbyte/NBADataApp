@@ -40,32 +40,5 @@ Future<StandingsByYear?> fetchStandings(year) async {
 }
 
 
-Future<GamesByDate?> fetchGamesByDate(date) async {
-  const String url = "https://api-nba-v1.p.rapidapi.com/games";
-  final Map<String, String> queryParameters = {
-    "date": date,
-  };
-
-  final Map<String, String> headers = {
-    "X-RapidAPI-Key": "f1209231d1msh4921fffcfc193e2p13fa0bjsnaa6b8925a8eb",
-    "X-RapidAPI-Host": "api-nba-v1.p.rapidapi.com",
-  };
-
-  final Uri uri = Uri.parse(url).replace(queryParameters: queryParameters);
-
-  final response = await http.get(uri, headers: headers);
-
-  if (response.statusCode == 200) {
-    final Map<String, dynamic> responseJson = json.decode(response.body);
-    print("GamesByDate Call Successful");
-    return GamesByDate.fromJson(responseJson);
-
-  } else {
-    print('Error: ${response.statusCode}');
-    print('Response Body: ${response.body}');
-    return null;
-  }
-}
-
 
 

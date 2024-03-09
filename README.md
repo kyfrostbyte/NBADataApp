@@ -46,6 +46,27 @@ print(" ");
 }
 
 
+
+String date = "2022-02-12"; // Replace with the desired date
+GamesByDate? gamesByDate = await fetchGamesByDate(date);
+
+if (gamesByDate != null) {
+for (GameInfo game in gamesByDate.games) {
+print(game.homeTeamName);
+print(game.homeScore);
+print(game.homeLogo);
+print("");
+print(game.visitorTeamName);
+print(game.visitorScore);
+print(game.visitorLogo);
+
+      print("");
+      print("");
+}
+}
+
+
+
 # Get standings. Sorted by rank and conference
 String date = "2021"; // Replace with the desired date
 StandingsByYear? standingsByYear = await fetchStandings(date);
