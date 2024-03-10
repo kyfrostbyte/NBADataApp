@@ -62,56 +62,58 @@ class _StandingsPageState extends State<StandingsPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Row(
-          children: [
-            // West Conference Standings
-            Expanded(
-              child: FutureBuilder<List<StandingsInfo>>(
-                future: standings,
-                builder: (context, AsyncSnapshot<List<StandingsInfo>> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text("Error: ${snapshot.error}");
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Text("No data available for the West Conference.");
-                  } else {
-                    // Sort and filter West Conference Standings
-                    List<StandingsInfo> westStandings = snapshot.data!
-                        .where((info) => info.conference == "west")
-                        .toList()
-                      ..sort((a, b) => a.rank.compareTo(b.rank));
-
-                    return buildStandingsColumn(westStandings);
-                  }
-                },
+        child: Expanded(
+          child: Row(
+            children: [
+              // West Conference Standings
+              Expanded(
+                child: FutureBuilder<List<StandingsInfo>>(
+                  future: standings,
+                  builder: (context, AsyncSnapshot<List<StandingsInfo>> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text("Error: ${snapshot.error}");
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Text("No data available for the West Conference.");
+                    } else {
+                      // Sort and filter West Conference Standings
+                      List<StandingsInfo> westStandings = snapshot.data!
+                          .where((info) => info.conference == "west")
+                          .toList()
+                        ..sort((a, b) => a.rank.compareTo(b.rank));
+          
+                      return buildStandingsColumn(westStandings);
+                    }
+                  },
+                ),
               ),
-            ),
-            SizedBox(width: 16), // Add spacing between columns
-            // East Conference Standings
-            Expanded(
-              child: FutureBuilder<List<StandingsInfo>>(
-                future: standings,
-                builder: (context, AsyncSnapshot<List<StandingsInfo>> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text("Error: ${snapshot.error}");
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Text("No data available for the East Conference.");
-                  } else {
-                    // Sort and filter East Conference Standings
-                    List<StandingsInfo> eastStandings = snapshot.data!
-                        .where((info) => info.conference == "east")
-                        .toList()
-                      ..sort((a, b) => a.rank.compareTo(b.rank));
-
-                    return buildStandingsColumn(eastStandings);
-                  }
-                },
+              SizedBox(width: 16), // Add spacing between columns
+              // East Conference Standings
+              Expanded(
+                child: FutureBuilder<List<StandingsInfo>>(
+                  future: standings,
+                  builder: (context, AsyncSnapshot<List<StandingsInfo>> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text("Error: ${snapshot.error}");
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Text("No data available for the East Conference.");
+                    } else {
+                      // Sort and filter East Conference Standings
+                      List<StandingsInfo> eastStandings = snapshot.data!
+                          .where((info) => info.conference == "east")
+                          .toList()
+                        ..sort((a, b) => a.rank.compareTo(b.rank));
+          
+                      return buildStandingsColumn(eastStandings);
+                    }
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
