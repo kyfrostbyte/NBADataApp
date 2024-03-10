@@ -18,10 +18,8 @@ class GamesService {
     final Uri uri = Uri.parse(url).replace(queryParameters: queryParameters);
     final response = await http.get(uri, headers: headers);
 
-
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-
       final List<GameInfo> list = [];
 
       for (var i = 0; i < data['response'].length; i++){
